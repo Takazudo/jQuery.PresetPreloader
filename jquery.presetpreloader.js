@@ -1,4 +1,4 @@
-/*! jQuery.PresetPreloader - v0.1.3 -  3/30/2012
+/*! jQuery.PresetPreloader - v0.0.0 -  3/30/2012
  * https://github.com/Takazudo/jQuery.PresetPreloader
  * Copyright (c) 2012 "Takazudo" Takeshi Takatsudo; Licensed MIT */
 
