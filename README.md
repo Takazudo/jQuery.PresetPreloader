@@ -1,6 +1,6 @@
 # jQuery.PresetPreloader
 
-is configurable img preload manager with rollover.
+is a configurable img preload manager with rollover.
 
 ## Usage
 
