@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title></title>
+<!-- <link rel="stylesheet" href="style.css"> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="../lib/jquery.imgloader.js"></script>
+<script src="../jquery.presetpreloader.js"></script>
+<style>
+body{
+	padding:20px 30px 50px;
+	font-family:sans-serif;
+	line-height:1.5;
+}
+h2{
+	margin-top:50px;
+}
+pre{
+	border:1px solid #000;
+	padding:10px 15px;
+	font-size:1.1em;
+	font-family:monospace;
+}
+#test2{
+	/* clear float */
+	overflow:hidden;
+	*zoom:1; /* ie */
+}
+.cssrollover1, .cssrollover2, .cssrollover3{
+	width:320px;
+	height:320px;
+	line-height:320px;
+	font-size:300px;
+	text-align:center;
+	margin:0 10px 10px 0;
+	background:#333;
+	color:#fff;
+	float:left;
+}
+.cssrollover1:hover,
+.cssrollover1:focus{ background:url(imgs/cssrollover/1_hover.jpg); }
+.cssrollover1:active{ background:url(imgs/cssrollover/1_active.jpg); }
+.cssrollover2:hover,
+.cssrollover2:focus{ background:url(imgs/cssrollover/2_hover.jpg); }
+.cssrollover2:active{ background:url(imgs/cssrollover/2_active.jpg); }
+.cssrollover3:hover,
+.cssrollover3:focus{ background:url(imgs/cssrollover/3_hover.jpg); }
+.cssrollover3:active{ background:url(imgs/cssrollover/3_active.jpg); }
+
+#test3{
+	/* clear float */
+	overflow:hidden;
+	*zoom:1; /* ie */
+}
+#test3 *{ float:left; }
+#test3 > *{ margin:0 10px 10px 0; }
+</style>
+</head>
+<body>
+
+<h1><a href="https://github.com/Takazudo/jQuery.PresetPreloader">jQuery.PresetPreloader</a></h1>
+
+<h2>$.presetPreloader.define / $.presetPreloader.load - preload defined imgs using api</h2>
+<p>$.presetPreloader.load preloads imgs. Check network monitor or something to check the result.</p>
+<script>
+$.presetPreloader.define({
+	imgset1: [ 'imgs/apicall/1.jpg', 'imgs/apicall/2.jpg', 'imgs/apicall/3.jpg' ],
+	imgset2: [ 'imgs/apicall/4.jpg', 'imgs/apicall/5.jpg', 'imgs/apicall/6.jpg' ],
+	imgset3: [ 'imgs/apicall/7.jpg', 'imgs/apicall/8.jpg', 'imgs/apicall/9.jpg' ]
+});
+$(function(){
+	$('#apicall1').click(function(){
+		$.presetPreloader.load('imgset1');
+	});
+	$('#apicall2').click(function(){
+		$.presetPreloader.load('imgset2');
+	});
+	$('#apicall3').click(function(){
+		$.presetPreloader.load('imgset3');
+	});
+});
+</script>
+
+<div id="test1">
+<button id="apicall1">$.presetPreloader.load('imgset1')</button>
+<button id="apicall2">$.presetPreloader.load('imgset2')</button>
+<button id="apicall3">$.presetPreloader.load('imgset3')</button>
+</div>
+
+<pre>$.presetPreloader.define({
+    imgset1: [ 'imgs/apicall/1.jpg', 'imgs/apicall/2.jpg', 'imgs/apicall/3.jpg' ],
+    imgset2: [ 'imgs/apicall/4.jpg', 'imgs/apicall/5.jpg', 'imgs/apicall/6.jpg' ],
+    imgset3: [ 'imgs/apicall/7.jpg', 'imgs/apicall/8.jpg', 'imgs/apicall/9.jpg' ]
+});
+$(function(){
+    $('#apicall1').click(function(){
+        $.presetPreloader.load('imgset1');
+    });
+    $('#apicall2').click(function(){
+        $.presetPreloader.load('imgset2');
+    });
+    $('#apicall3').click(function(){
+        $.presetPreloader.load('imgset3');
+    });
+});</pre>
+
+<h2>$.fn.presetPreload - preload imgs from dom</h2>
+<p>When you want to preload imgs with css's :hover, :active or something, use $.fn.presetPreload.<br>This preloads assigned imgs from [data-preload-key] attr.<br>This is the bridge to $.presetPreloader.load.</p>
+<p>This feature works well when there are many imgs to preload.<br>You can manage which imgs to preload from the info of dom in the page.<br>The browser doesn't need to preload imgs which are not necessary.<br>I guess this is effective againt no-reload ajaxed pages.<br>Apply $.fn.presetPreload to the newly added dom on the page. </p>
+
+<script>
+$.presetPreloader.define({
+	csshoverimgset1: [ 'imgs/cssrollover/1_hover.jpg', 'imgs/cssrollover/1_active.jpg' ],
+	csshoverimgset2: [ 'imgs/cssrollover/2_hover.jpg', 'imgs/cssrollover/2_active.jpg' ],
+	csshoverimgset3: [ 'imgs/cssrollover/3_hover.jpg', 'imgs/cssrollover/3_active.jpg' ]
+});
+$(function(){
+	$('.apply-preload').presetPreload();
+});
+</script>
+<div id="test2">
+<a href="#" class="cssrollover1 apply-preload" data-preload-key="csshoverimgset1">1</a>
+<a href="#" class="cssrollover2 apply-preload" data-preload-key="csshoverimgset2">2</a>
+<a href="#" class="cssrollover3 apply-preload" data-preload-key="csshoverimgset3">3</a>
+</div>
+
+<pre>$.presetPreloader.define({
+    csshoverimgset1: [ 'imgs/cssrollover/1_hover.jpg', 'imgs/cssrollover/1_active.jpg' ],
+    csshoverimgset2: [ 'imgs/cssrollover/2_hover.jpg', 'imgs/cssrollover/2_active.jpg' ],
+    csshoverimgset3: [ 'imgs/cssrollover/3_hover.jpg', 'imgs/cssrollover/3_active.jpg' ]
+});
+$(function(){
+    $('.apply-preload').presetPreload();
+});</pre>
+<pre>&lt;a href=&quot;#&quot; class=&quot;cssrollover1 apply-preload&quot; data-preload-key=&quot;csshoverimgset1&quot;&gt;1&lt;/a&gt;
+&lt;a href=&quot;#&quot; class=&quot;cssrollover2 apply-preload&quot; data-preload-key=&quot;csshoverimgset2&quot;&gt;2&lt;/a&gt;
+&lt;a href=&quot;#&quot; class=&quot;cssrollover3 apply-preload&quot; data-preload-key=&quot;csshoverimgset3&quot;&gt;3&lt;/a&gt;</pre>
+<pre>.cssrollover1:hover,
+.cssrollover1:focus{ background:url(imgs/cssrollover/1_hover.jpg); }
+.cssrollover1:active{ background:url(imgs/cssrollover/1_active.jpg); }
+.cssrollover2:hover,
+.cssrollover2:focus{ background:url(imgs/cssrollover/2_hover.jpg); }
+.cssrollover2:active{ background:url(imgs/cssrollover/2_active.jpg); }
+.cssrollover3:hover,
+.cssrollover3:focus{ background:url(imgs/cssrollover/3_hover.jpg); }
+.cssrollover3:active{ background:url(imgs/cssrollover/3_active.jpg); }</pre>
+
+<h2>$.fn.rollover - JavaScript rollover</h2>
+
+<script>
+$.presetPreloader.define({
+	hoverimg: {
+		expr: /^(.+_)normal(\.[^.]+)$/,
+		result:'$1hover$2'
+	}
+});
+$(function(){
+	$('.apply-rollover').rollover();
+});
+</script>
+<div id="test3">
+	<a class="apply-rollover" href="#"><img src="imgs/jsrollover/1_normal.jpg" alt=""></a>
+	<span class="apply-rollover" href="#"><img src="imgs/jsrollover/2_normal.jpg" alt=""></span>
+	<input class="apply-rollover"type="image" src="imgs/jsrollover/3_normal.jpg">
+	<img class="apply-rollover"type="image" src="imgs/jsrollover/4_normal.jpg">
+</div>
+
+
+
+</body>
+</html>
