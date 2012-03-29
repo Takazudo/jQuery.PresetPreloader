@@ -134,9 +134,9 @@ $(function(){
 <h2>$.fn.presetPreload - preload imgs from dom</h2>
 <p>When you want to preload imgs with css's :hover, :active or something, use $.fn.presetPreload.<br>This preloads assigned imgs from [data-preload-key] attr.<br>This is the bridge to $.presetPreloader.load.</p>
 <p>This feature works well when there are many imgs to preload.<br>You can manage which imgs to preload from the info of dom in the page.<br>The visitors of your website don't need to preload unnecessary imgs because we need only the imgs related with the elements on the page.<br>It is not so good to preload all imgs first because the browser may request a huge numbers of imgs at once.</p>
-<p>I created this feature when I coded one-page web application.<br>On one-page web app, every links doesn't refresh the displayed page.<br>Instead, it removes some elements on the page and append new elements onto the page.<br>Under such circumstances, I needed to manage what imgs should be preloaded dynamically.<br>What imgs to be preloaded? We can know it what modules are on the page.<br>We need only the imgs related with the modules on the page.
-</p>
-<p>Try clicking the anchors with background below.</p>
+<p>I created this feature when I coded one-page web application.<br>On one-page web app, every links doesn't refresh the displayed page.<br>Instead, JavaScript removes some elements on the page then appends new elements onto the page.<br>Under such circumstances, I needed to manage what imgs should be preloaded dynamically.<br>What imgs to be preloaded? We can know it what elements are on the page.<br>We need only the imgs related with the elements on the page.</p>
+<p>First, define all preload presets.<br>When the elements on the page are refreshed, run $('.apply-preload', modifiedRootEl).presetPreload();.</p>
+<p>Try clicking the anchors with background below.<br>Imgs appear immediately because background imgs are already preloaded.</p>
 
 <script>
 $.presetPreloader.define({
@@ -199,7 +199,7 @@ $(function(){
 
 <h2>$.fn.rollover - well known rollover</h2>
 
-<p>$.fn.rollover is just a well-known rollover.<br>But, of course it preloads hover imgs using $.presetPreloader.</p>
+<p>$.fn.rollover is just a well-known rollover.<br>Of course this preloads hover imgs using $.presetPreloader.</p>
 <p>Before using $.fn.rollover, you need to define the regexp pattern with $.presetPreloader like below.<br>The key of the preset should be "hoverimg" as default.<br>This preloads the imgs using the defined regexp pattern.<br>In this case, it preloads "1_hover.jpg", "2_hover.jpg", "3_hover.jpg" and "4_hover.jpg".</p>
 <p>This supports various patterns of rollover - img in the element, input type image and so on.</p>
 
