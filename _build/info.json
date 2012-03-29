@@ -1,6 +1,6 @@
 {
   "name": "jQuery.PresetPreloader",
-  "description": "Configurable img preloader with rollover.",
+  "description": "is configurable img preload manager with rollover.",
   "version": "0.0.0",
   "homepage": "https://github.com/Takazudo/jQuery.PresetPreloader",
   "author": {

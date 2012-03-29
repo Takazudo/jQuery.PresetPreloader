@@ -1,16 +1,14 @@
-Under dev.
-
 # jQuery.PresetPreloader
 
-Presettable
-
-## demos
-
-working
+is configurable img preload manager with rollover.
 
 ## Usage
 
-working
+See the demos below.
+
+## demos
+
+* [demo](http://takazudo.github.com/jQuery.PresetPreloader/demo/)
 
 ## Depends
 
