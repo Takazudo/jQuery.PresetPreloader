@@ -1,16 +1,33 @@
 (($) -> # encapsulate plugin start
 
-  loader = null
+  loader = null # shared in this plugin
 
-  # if with jQuery.ImgLoader, fetchImg send request only once per src
-  # https://github.com/Takazudo/jQuery.ImgLoader
-  fetchImg = $.ImgLoaderNs?.fetchImg or (src) ->
-    (new Image).src = src
+  # ============================================================
+  # utility
+  
+  # preload img only once
+  
+  preload = (->
+    cache = {}
+    (src) ->
+      if cache[src] then return
+      cache[src] = true
+      (new Image).src = src
+  )()
 
 
-  # wraps one config item
+  # ============================================================
+  # preloader item class
+  # each wraps one preload config item
 
   class Item_replacer
+    ###
+      replInfo should be an object like
+      {
+        expr: /^(.+_)normal(\.[^.]+)$/,
+        result:'$1hover$2'
+      }
+    ###
     constructor: (@replInfo) ->
     applyReplace: (baseSrc) ->
       if not @replInfo.expr.test baseSrc
@@ -18,35 +35,38 @@
       baseSrc.replace @replInfo.expr, @replInfo.result
     load: (baseSrc) ->
       src = @applyReplace baseSrc
-      if src then fetchImg src
+      if src then preload src
       @
 
   class Item_srcs
+    # srcs is just an array of srcs
     constructor: (@srcs) ->
     load: ->
-      $.each @srcs, (i, src) -> fetchImg src
+      $.each @srcs, (i, src) -> preload src
       @
 
 
-  # config manager
+  # ============================================================
+  # PresetPreloader
+  # is the main class which manages config items
   
   class PresetPreloader
 
-    constructor: (config) ->
-
+    constructor: ->
       # handle instance creation wo new
       if not (@ instanceof arguments.callee)
         return new PresetPreloader config
 
       @_config = {}
-      if config then @define config
 
     define: (config) ->
       $.each config, (key, val) =>
         switch ($.type val)
           when 'array'
+            # if array, it's just an srcs
             @_config[key] = new Item_srcs val
           when 'object'
+            # if object, it's expr patterns
             @_config[key] = new Item_replacer val
       @
 
@@ -60,7 +80,7 @@
     load: (name, src) ->
       item = @get name
       if not item
-        console?.log "PresetPreloadr: #{name} was tried to load but not defined yet"
+        console?.log "PresetPreloadr: #{name} was tried to load but it was not defined yet"
         return false
       item.load src
       @
@@ -71,33 +91,72 @@
   loader = new PresetPreloader
 
 
-  # rollover item
+  # ============================================================
+  # Rollover
 
   class Rollover
     
-    constructor: (@el, useActive) ->
+    ###
+      options should be an object like
+      {
+        hoverPresetKey: 'hoverimg'
+        activePresetKey: 'activeimg'
+        useActive: false
+      }
+    ###
+    constructor: (@el, @options) ->
 
+      @_setupEls()
+      @_src_normal = @$img.attr 'src'
+
+      # prepare hover img
+      replacer = loader.get @options.hoverPresetKey
+      @_src_hover = replacer.applyReplace @_src_normal
+      preload @_src_hover
+
+      # eventify
+      @$watcher.hover @toHover, @toNormal
+      @$watcher.focus @toHover
+      @$watcher.blur @toNormal
+
+      # setup :active behavior
+      if @options.useActive then @_setupActiveBehavior()
+
+    _setupEls: ->
       @$watcher = $(@el)
       if @$watcher.is 'img,:image'
         @$img = @$watcher
       else
         @$img = @$watcher.find 'img,:image'
 
-      @_src_normal = @$img.attr 'src'
-      @_src_hover = (loader.get 'hoverimg').applyReplace @_src_normal
-      fetchImg @_src_hover
+    _setupActiveBehavior: ->
+      # prepare active img
+      replacer = loader.get @options.activePresetKey
+      @_src_active = replacer.applyReplace @_src_normal
+      preload @_src_active
 
-      @$watcher.hover @toHover, @toNormal
+      # eventify
+      @$watcher.mousedown @toActive
+      @$watcher.mouseup @toNormal
+
+      @
+
+    _imgTo: (stats) ->
+      src = null
+      switch stats
+        when 'normal' then src = @_src_normal
+        when 'hover' then src = @_src_hover
+        when 'active' then src = @_src_active
+      @$img.attr 'src', src
+      @
       
-    toNormal: =>
-      @$img.attr 'src', @_src_normal
-      @
-    toHover: =>
-      @$img.attr 'src', @_src_hover
-      @
+    toNormal: => @_imgTo 'normal'
+    toHover: => @_imgTo 'hover'
+    toActive: => @_imgTo 'active'
 
 
-  # jQuery bridge
+  # ============================================================
+  # jQuery bridges
 
   $.fn.presetPreload = ->
     @each ->
@@ -106,28 +165,21 @@
       src = $el.attr 'src'
       loader.load key, src
 
-  $.fn.rollover = ->
-    @each -> new Rollover @
+  $.fn.rollover = (options) ->
+    options = $.extend
+      hoverPresetKey: 'hoverimg'
+      activePresetKey: 'activeimg'
+      useActive: false
+    , options
+    @each ->
+      new Rollover @, options
   
 
-  
+  # ============================================================
+
   # globalify
   $.PresetPreloader = PresetPreloader
   $.presetPreloader = loader
-
-
-  #loader.define
-  #  'foo': [ 'imgs/1.jpg', 'imgs/2.jpg', 'imgs/3.jpg' ]
-  #  'bar': [ 'imgs/4.jpg', 'imgs/5.jpg', 'imgs/6.jpg' ]
-  #  'hoverimg':
-  #    expr: /^(.+_)normal(\.[^.]+)$/
-  #    result:'$1hover$2'
-
-  #loader.load 'foo'
-  #loader.load 'bar'
-  #loader.load 'hoverimg', 'imgs/bothinsamedir/1_normal.jpg'
-  #loader.load 'hoverimg', 'imgs/bothinsamedir/2_normal.jpg'
-  #loader.load 'hoverimg', 'imgs/bothinsamedir/3_normal.jpg'
 
 
 ) jQuery # encapsulate plugin end

@@ -5,13 +5,25 @@
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 (function($) {
-  var Item_replacer, Item_srcs, PresetPreloader, Rollover, fetchImg, loader, _ref;
+  var Item_replacer, Item_srcs, PresetPreloader, Rollover, loader, preload;
   loader = null;
-  fetchImg = ((_ref = $.ImgLoaderNs) != null ? _ref.fetchImg : void 0) || function(src) {
-    return (new Image).src = src;
-  };
+  preload = (function() {
+    var cache;
+    cache = {};
+    return function(src) {
+      if (cache[src]) return;
+      cache[src] = true;
+      return (new Image).src = src;
+    };
+  })();
   Item_replacer = (function() {
-
+    /*
+          replInfo should be an object like
+          {
+            expr: /^(.+_)normal(\.[^.]+)$/,
+            result:'$1hover$2'
+          }
+    */
     function Item_replacer(replInfo) {
       this.replInfo = replInfo;
     }
@@ -24,7 +36,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
     Item_replacer.prototype.load = function(baseSrc) {
       var src;
       src = this.applyReplace(baseSrc);
-      if (src) fetchImg(src);
+      if (src) preload(src);
       return this;
     };
 
@@ -39,7 +51,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
 
     Item_srcs.prototype.load = function() {
       $.each(this.srcs, function(i, src) {
-        return fetchImg(src);
+        return preload(src);
       });
       return this;
     };
@@ -49,10 +61,9 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
   })();
   PresetPreloader = (function() {
 
-    function PresetPreloader(config) {
+    function PresetPreloader() {
       if (!(this instanceof arguments.callee)) return new PresetPreloader(config);
       this._config = {};
-      if (config) this.define(config);
     }
 
     PresetPreloader.prototype.define = function(config) {
@@ -85,7 +96,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
       item = this.get(name);
       if (!item) {
         if (typeof console !== "undefined" && console !== null) {
-          console.log("PresetPreloadr: " + name + " was tried to load but not defined yet");
+          console.log("PresetPreloadr: " + name + " was tried to load but it was not defined yet");
         }
         return false;
       }
@@ -98,31 +109,78 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
   })();
   loader = new PresetPreloader;
   Rollover = (function() {
-
-    function Rollover(el, useActive) {
+    /*
+          options should be an object like
+          {
+            hoverPresetKey: 'hoverimg'
+            activePresetKey: 'activeimg'
+            useActive: false
+          }
+    */
+    function Rollover(el, options) {
+      var replacer;
       this.el = el;
+      this.options = options;
+      this.toActive = __bind(this.toActive, this);
       this.toHover = __bind(this.toHover, this);
       this.toNormal = __bind(this.toNormal, this);
-      this.$watcher = $(this.el);
-      if (this.$watcher.is('img,:image')) {
-        this.$img = this.$watcher;
-      } else {
-        this.$img = this.$watcher.find('img,:image');
-      }
+      this._setupEls();
       this._src_normal = this.$img.attr('src');
-      this._src_hover = (loader.get('hoverimg')).applyReplace(this._src_normal);
-      fetchImg(this._src_hover);
+      replacer = loader.get(this.options.hoverPresetKey);
+      this._src_hover = replacer.applyReplace(this._src_normal);
+      preload(this._src_hover);
       this.$watcher.hover(this.toHover, this.toNormal);
+      this.$watcher.focus(this.toHover);
+      this.$watcher.blur(this.toNormal);
+      if (this.options.useActive) this._setupActiveBehavior();
     }
 
-    Rollover.prototype.toNormal = function() {
-      this.$img.attr('src', this._src_normal);
+    Rollover.prototype._setupEls = function() {
+      this.$watcher = $(this.el);
+      if (this.$watcher.is('img,:image')) {
+        return this.$img = this.$watcher;
+      } else {
+        return this.$img = this.$watcher.find('img,:image');
+      }
+    };
+
+    Rollover.prototype._setupActiveBehavior = function() {
+      var replacer;
+      replacer = loader.get(this.options.activePresetKey);
+      this._src_active = replacer.applyReplace(this._src_normal);
+      preload(this._src_active);
+      this.$watcher.mousedown(this.toActive);
+      this.$watcher.mouseup(this.toNormal);
       return this;
     };
 
-    Rollover.prototype.toHover = function() {
-      this.$img.attr('src', this._src_hover);
+    Rollover.prototype._imgTo = function(stats) {
+      var src;
+      src = null;
+      switch (stats) {
+        case 'normal':
+          src = this._src_normal;
+          break;
+        case 'hover':
+          src = this._src_hover;
+          break;
+        case 'active':
+          src = this._src_active;
+      }
+      this.$img.attr('src', src);
       return this;
+    };
+
+    Rollover.prototype.toNormal = function() {
+      return this._imgTo('normal');
+    };
+
+    Rollover.prototype.toHover = function() {
+      return this._imgTo('hover');
+    };
+
+    Rollover.prototype.toActive = function() {
+      return this._imgTo('active');
     };
 
     return Rollover;
@@ -137,9 +195,14 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
       return loader.load(key, src);
     });
   };
-  $.fn.rollover = function() {
+  $.fn.rollover = function(options) {
+    options = $.extend({
+      hoverPresetKey: 'hoverimg',
+      activePresetKey: 'activeimg',
+      useActive: false
+    }, options);
     return this.each(function() {
-      return new Rollover(this);
+      return new Rollover(this, options);
     });
   };
   $.PresetPreloader = PresetPreloader;

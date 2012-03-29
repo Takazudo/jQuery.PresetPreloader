@@ -5,13 +5,18 @@
 <title></title>
 <!-- <link rel="stylesheet" href="style.css"> -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="../lib/jquery.imgloader.js"></script>
 <script src="../jquery.presetpreloader.js"></script>
 <style>
 body{
 	padding:20px 30px 50px;
 	font-family:sans-serif;
 	line-height:1.5;
+}
+h1{
+	margin-bottom:0;
+}
+h1 + p{
+	margin-top:0;
 }
 h2{
 	margin-top:50px;
@@ -27,26 +32,46 @@ pre{
 	overflow:hidden;
 	*zoom:1; /* ie */
 }
-.cssrollover1, .cssrollover2, .cssrollover3{
+.cssrollover1, .cssrollover2, .cssrollover3, .cssrollover4{
 	width:320px;
 	height:320px;
 	line-height:320px;
 	font-size:300px;
 	text-align:center;
 	margin:0 10px 10px 0;
-	background:#333;
 	color:#fff;
 	float:left;
 }
-.cssrollover1:hover,
-.cssrollover1:focus{ background:url(imgs/cssrollover/1_hover.jpg); }
-.cssrollover1:active{ background:url(imgs/cssrollover/1_active.jpg); }
-.cssrollover2:hover,
-.cssrollover2:focus{ background:url(imgs/cssrollover/2_hover.jpg); }
-.cssrollover2:active{ background:url(imgs/cssrollover/2_active.jpg); }
-.cssrollover3:hover,
-.cssrollover3:focus{ background:url(imgs/cssrollover/3_hover.jpg); }
-.cssrollover3:active{ background:url(imgs/cssrollover/3_active.jpg); }
+.cssrollover1 span, .cssrollover2 span, .cssrollover3 span, .cssrollover4 span{
+	width:320px;
+	height:320px;
+	float:left;
+}
+.cssrollover1 span{ background:url(imgs/cssrollover/1_normal.jpg); }
+.cssrollover1,
+.cssrollover1:hover span,
+.cssrollover1:focus span{ background:url(imgs/cssrollover/1_hover.jpg); }
+.cssrollover1:active span{ background:url(imgs/cssrollover/1_active.jpg); }
+
+.cssrollover2 span{ background:url(imgs/cssrollover/2_normal.jpg); }
+.cssrollover2,
+.cssrollover2:hover span,
+.cssrollover2:focus span{ background:url(imgs/cssrollover/2_hover.jpg); }
+.cssrollover2:active span{ background:url(imgs/cssrollover/2_active.jpg); }
+
+.cssrollover3 span{ background:url(imgs/cssrollover/3_normal.jpg); }
+.cssrollover3,
+.cssrollover3:hover span,
+.cssrollover3:focus span{ background:url(imgs/cssrollover/3_hover.jpg); }
+.cssrollover3:active span{ background:url(imgs/cssrollover/3_active.jpg); }
+
+.cssrollover4 span{ background:url(imgs/cssrollover/2_normal.jpg); }
+.cssrollover4,
+.cssrollover4:hover span,
+.cssrollover4:focus span{ background:url(imgs/cssrollover/2_hover.jpg); }
+.cssrollover4:active span{ background:url(imgs/cssrollover/2_active.jpg); }
+
+
 
 #test3{
 	/* clear float */
@@ -60,9 +85,10 @@ pre{
 <body>
 
 <h1><a href="https://github.com/Takazudo/jQuery.PresetPreloader">jQuery.PresetPreloader</a></h1>
+<p>is a img preload manager with rollover.</p>
 
 <h2>$.presetPreloader.define / $.presetPreloader.load - preload defined imgs using api</h2>
-<p>$.presetPreloader.load preloads imgs. Check network monitor or something to check the result.</p>
+<p>$.presetPreloader.load preloads imgs from the sets you defined.<br>See network monitor or something to check the result.</p>
 <script>
 $.presetPreloader.define({
 	imgset1: [ 'imgs/apicall/1.jpg', 'imgs/apicall/2.jpg', 'imgs/apicall/3.jpg' ],
@@ -107,46 +133,76 @@ $(function(){
 
 <h2>$.fn.presetPreload - preload imgs from dom</h2>
 <p>When you want to preload imgs with css's :hover, :active or something, use $.fn.presetPreload.<br>This preloads assigned imgs from [data-preload-key] attr.<br>This is the bridge to $.presetPreloader.load.</p>
-<p>This feature works well when there are many imgs to preload.<br>You can manage which imgs to preload from the info of dom in the page.<br>The browser doesn't need to preload imgs which are not necessary.<br>I guess this is effective againt no-reload ajaxed pages.<br>Apply $.fn.presetPreload to the newly added dom on the page. </p>
+<p>This feature works well when there are many imgs to preload.<br>You can manage which imgs to preload from the info of dom in the page.<br>The visitors of your website don't need to preload unnecessary imgs because we need only the imgs related with the elements on the page.<br>It is not so good to preload all imgs first because the browser may request a huge numbers of imgs at once.</p>
+<p>I created this feature when I coded one-page web application.<br>On one-page web app, every links doesn't refresh the displayed page.<br>Instead, it removes some elements on the page and append new elements onto the page.<br>Under such circumstances, I needed to manage what imgs should be preloaded dynamically.<br>What imgs to be preloaded? We can know it what modules are on the page.<br>We need only the imgs related with the modules on the page.
+</p>
+<p>Try clicking the anchors with background below.</p>
 
 <script>
 $.presetPreloader.define({
-	csshoverimgset1: [ 'imgs/cssrollover/1_hover.jpg', 'imgs/cssrollover/1_active.jpg' ],
-	csshoverimgset2: [ 'imgs/cssrollover/2_hover.jpg', 'imgs/cssrollover/2_active.jpg' ],
-	csshoverimgset3: [ 'imgs/cssrollover/3_hover.jpg', 'imgs/cssrollover/3_active.jpg' ]
+	csshoverimgset1: [ 'imgs/cssrollover/1_active.jpg' ],
+	csshoverimgset2: [ 'imgs/cssrollover/2_active.jpg' ],
+	csshoverimgset3: [ 'imgs/cssrollover/3_active.jpg' ],
+	csshoverimgset4: [ 'imgs/cssrollover/4_active.jpg' ]
 });
 $(function(){
 	$('.apply-preload').presetPreload();
 });
 </script>
 <div id="test2">
-<a href="#" class="cssrollover1 apply-preload" data-preload-key="csshoverimgset1">1</a>
-<a href="#" class="cssrollover2 apply-preload" data-preload-key="csshoverimgset2">2</a>
-<a href="#" class="cssrollover3 apply-preload" data-preload-key="csshoverimgset3">3</a>
+<a href="#test2" class="cssrollover1 apply-preload" data-preload-key="csshoverimgset1"><span>1</span></a>
+<a href="#test2" class="cssrollover2 apply-preload" data-preload-key="csshoverimgset2"><span>2</span></a>
+<a href="#test2" class="cssrollover3 apply-preload" data-preload-key="csshoverimgset3"><span>3</span></a>
+<a href="#test2" class="cssrollover4 apply-preload" data-preload-key="csshoverimgset4"><span>4</span></a>
 </div>
-
 <pre>$.presetPreloader.define({
-    csshoverimgset1: [ 'imgs/cssrollover/1_hover.jpg', 'imgs/cssrollover/1_active.jpg' ],
-    csshoverimgset2: [ 'imgs/cssrollover/2_hover.jpg', 'imgs/cssrollover/2_active.jpg' ],
-    csshoverimgset3: [ 'imgs/cssrollover/3_hover.jpg', 'imgs/cssrollover/3_active.jpg' ]
+    csshoverimgset1: [ 'imgs/cssrollover/1_active.jpg' ],
+    csshoverimgset2: [ 'imgs/cssrollover/2_active.jpg' ],
+    csshoverimgset3: [ 'imgs/cssrollover/3_active.jpg' ],
+    csshoverimgset4: [ 'imgs/cssrollover/4_active.jpg' ]
 });
 $(function(){
     $('.apply-preload').presetPreload();
 });</pre>
-<pre>&lt;a href=&quot;#&quot; class=&quot;cssrollover1 apply-preload&quot; data-preload-key=&quot;csshoverimgset1&quot;&gt;1&lt;/a&gt;
-&lt;a href=&quot;#&quot; class=&quot;cssrollover2 apply-preload&quot; data-preload-key=&quot;csshoverimgset2&quot;&gt;2&lt;/a&gt;
-&lt;a href=&quot;#&quot; class=&quot;cssrollover3 apply-preload&quot; data-preload-key=&quot;csshoverimgset3&quot;&gt;3&lt;/a&gt;</pre>
-<pre>.cssrollover1:hover,
-.cssrollover1:focus{ background:url(imgs/cssrollover/1_hover.jpg); }
-.cssrollover1:active{ background:url(imgs/cssrollover/1_active.jpg); }
-.cssrollover2:hover,
-.cssrollover2:focus{ background:url(imgs/cssrollover/2_hover.jpg); }
-.cssrollover2:active{ background:url(imgs/cssrollover/2_active.jpg); }
-.cssrollover3:hover,
-.cssrollover3:focus{ background:url(imgs/cssrollover/3_hover.jpg); }
-.cssrollover3:active{ background:url(imgs/cssrollover/3_active.jpg); }</pre>
 
-<h2>$.fn.rollover - JavaScript rollover</h2>
+
+
+<pre>&lt;a href=&quot;#test2&quot; class=&quot;cssrollover1 apply-preload&quot; data-preload-key=&quot;csshoverimgset1&quot;&gt;&lt;span&gt;1&lt;/span&gt;&lt;/a&gt;
+&lt;a href=&quot;#test2&quot; class=&quot;cssrollover2 apply-preload&quot; data-preload-key=&quot;csshoverimgset2&quot;&gt;&lt;span&gt;2&lt;/span&gt;&lt;/a&gt;
+&lt;a href=&quot;#test2&quot; class=&quot;cssrollover3 apply-preload&quot; data-preload-key=&quot;csshoverimgset3&quot;&gt;&lt;span&gt;3&lt;/span&gt;&lt;/a&gt;
+&lt;a href=&quot;#test2&quot; class=&quot;cssrollover4 apply-preload&quot; data-preload-key=&quot;csshoverimgset4&quot;&gt;&lt;span&gt;4&lt;/span&gt;&lt;/a&gt;</pre>
+
+<p>In this example, I set hover img to the background of each anchors.<br>This is to avoid <a href="http://code.google.com/p/chromium/issues/detail?id=102706">the bug</a> on the chrome.</p>
+<pre>.cssrollover1 span{ background:url(imgs/cssrollover/1_normal.jpg); }
+.cssrollover1,
+.cssrollover1:hover span,
+.cssrollover1:focus span{ background:url(imgs/cssrollover/1_hover.jpg); }
+.cssrollover1:active span{ background:url(imgs/cssrollover/1_active.jpg); }
+
+.cssrollover2 span{ background:url(imgs/cssrollover/2_normal.jpg); }
+.cssrollover2,
+.cssrollover2:hover span,
+.cssrollover2:focus span{ background:url(imgs/cssrollover/2_hover.jpg); }
+.cssrollover2:active span{ background:url(imgs/cssrollover/2_active.jpg); }
+
+.cssrollover3 span{ background:url(imgs/cssrollover/3_normal.jpg); }
+.cssrollover3,
+.cssrollover3:hover span,
+.cssrollover3:focus span{ background:url(imgs/cssrollover/3_hover.jpg); }
+.cssrollover3:active span{ background:url(imgs/cssrollover/3_active.jpg); }
+
+.cssrollover4 span{ background:url(imgs/cssrollover/2_normal.jpg); }
+.cssrollover4,
+.cssrollover4:hover span,
+.cssrollover4:focus span{ background:url(imgs/cssrollover/2_hover.jpg); }
+.cssrollover4:active span{ background:url(imgs/cssrollover/2_active.jpg); }</pre>
+
+<h2>$.fn.rollover - well known rollover</h2>
+
+<p>$.fn.rollover is just a well-known rollover.<br>But, of course it preloads hover imgs using $.presetPreloader.</p>
+<p>Before using $.fn.rollover, you need to define the regexp pattern with $.presetPreloader like below.<br>The key of the preset should be "hoverimg" as default.<br>This preloads the imgs using the defined regexp pattern.<br>In this case, it preloads "1_hover.jpg", "2_hover.jpg", "3_hover.jpg" and "4_hover.jpg".</p>
+<p>This supports various patterns of rollover - img in the element, input type image and so on.</p>
+
 
 <script>
 $.presetPreloader.define({
@@ -158,14 +214,132 @@ $.presetPreloader.define({
 $(function(){
 	$('.apply-rollover').rollover();
 });
+//$.presetPreloader.define({
+//	hoverpattern: {
+//		expr: /^(.+_)normal(\.[^.]+)$/,
+//		result:'$1hover$2'
+//	}
+//});
+//$(function(){
+//	$('.apply-rollover').rollover({
+//		hoverPresetKey: 'hoverpattern'
+//	});
+//});
 </script>
 <div id="test3">
-	<a class="apply-rollover" href="#"><img src="imgs/jsrollover/1_normal.jpg" alt=""></a>
-	<span class="apply-rollover" href="#"><img src="imgs/jsrollover/2_normal.jpg" alt=""></span>
-	<input class="apply-rollover"type="image" src="imgs/jsrollover/3_normal.jpg">
-	<img class="apply-rollover"type="image" src="imgs/jsrollover/4_normal.jpg">
+	<a class="apply-rollover" href="#test3"><img src="imgs/jsrollover/1_normal.jpg" alt=""></a>
+	<span class="apply-rollover" href="#test3"><img src="imgs/jsrollover/2_normal.jpg" alt=""></span>
+	<input class="apply-rollover" type="image" src="imgs/jsrollover/3_normal.jpg">
+	<img class="apply-rollover" src="imgs/jsrollover/4_normal.jpg" alt="">
 </div>
 
+<pre>$.presetPreloader.define({
+    hoverimg: {
+        expr: /^(.+_)normal(\.[^.]+)$/,
+        result:'$1hover$2'
+    }
+});
+$(function(){
+    $('.apply-rollover').rollover();
+});</pre>
+<pre>&lt;a class=&quot;apply-rollover&quot; href=&quot;#test3&quot;&gt;&lt;img src=&quot;imgs/jsrollover/1_normal.jpg&quot; alt=&quot;&quot;&gt;&lt;/a&gt;
+&lt;span class=&quot;apply-rollover&quot; href=&quot;#test3&quot;&gt;&lt;img src=&quot;imgs/jsrollover/2_normal.jpg&quot; alt=&quot;&quot;&gt;&lt;/span&gt;
+&lt;input class=&quot;apply-rollover&quot; type=&quot;image&quot; src=&quot;imgs/jsrollover/3_normal.jpg&quot;&gt;
+&lt;img class=&quot;apply-rollover&quot; src=&quot;imgs/jsrollover/4_normal.jpg&quot; alt=&quot;&quot;&gt;</pre>
+
+
+<p>You can define the preset key name like below if you don't want to use "hoverimg" or you need to use plural rollover src replacement rules.</p>
+<pre>$.presetPreloader.define({
+    hoverpattern: {
+        expr: /^(.+_)normal(\.[^.]+)$/,
+        result:'$1hover$2'
+    }
+});
+$(function(){
+    $('.apply-rollover').rollover({
+        hoverPresetKey: 'hoverpattern'
+    });
+});</pre>
+
+<h2>$.fn.rollover - simulate CSS's :active</h2>
+
+<p>With "userActive: true" option, you can set active img to the rollovers.<br>This is just like the :active in css though this just watches mousedown and mouseup.</p>
+<p>To use this feature, you need to define "activeimg" for the active src.<br>Click the imgs below to check how it works.</p>
+
+<script>
+$.presetPreloader.define({
+	hoverimg: {
+		expr: /^(.+_)normal(\.[^.]+)$/,
+		result:'$1hover$2'
+	},
+	activeimg: {
+		expr: /^(.+_)normal(\.[^.]+)$/,
+		result:'$1active$2'
+	}
+});
+$(function(){
+	$('.apply-activerollover').rollover({
+		useActive: true
+	});
+});
+//$.presetPreloader.define({
+//	hoverimg: {
+//		expr: /^(.+_)normal(\.[^.]+)$/,
+//		result:'$1hover$2'
+//	},
+//	activeimgpattern: {
+//		expr: /^(.+_)normal(\.[^.]+)$/,
+//		result:'$1active$2'
+//	}
+//});
+//$(function(){
+//	$('.apply-activerollover').rollover({
+//		useActive: true,
+//		activePresetKey: 'activeimgpattern'
+//	});
+//});
+</script>
+<div id="test4">
+	<a class="apply-activerollover" href="#test4"><img src="imgs/jsrolloveractive/1_normal.jpg" alt=""></a>
+	<span class="apply-activerollover" href="#test4"><img src="imgs/jsrolloveractive/2_normal.jpg" alt=""></span>
+	<input class="apply-activerollover" type="image" src="imgs/jsrolloveractive/3_normal.jpg">
+	<img class="apply-activerollover" src="imgs/jsrolloveractive/4_normal.jpg">
+</div>
+
+<pre>$.presetPreloader.define({
+    hoverimg: {
+        expr: /^(.+_)normal(\.[^.]+)$/,
+        result:'$1hover$2'
+    },
+    activeimg: {
+        expr: /^(.+_)normal(\.[^.]+)$/,
+        result:'$1active$2'
+    }
+});
+$(function(){
+    $('.apply-activerollover').rollover({
+        useActive: true
+    });
+});</pre>
+
+<p>Like hoverPresetKey, you can choose what preset key to use for active imgs with "activePresetKey" option.</p>
+
+<pre>$.presetPreloader.define({
+    hoverimg: {
+        expr: /^(.+_)normal(\.[^.]+)$/,
+        result:'$1hover$2'
+    },
+    activeimgpattern: {
+        expr: /^(.+_)normal(\.[^.]+)$/,
+        result:'$1active$2'
+    }
+});
+$(function(){
+    $('.apply-activerollover').rollover({
+        useActive: true,
+        activePresetKey: 'activeimgpattern'
+    });
+});</pre>
 
 
 </body>
